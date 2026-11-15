@@ -1,49 +1,42 @@
-# Computer Networks Lab (Socket Programming)
+# Computer Networks Laboratory
 
-A repository for Computer Networks Laboratory assignments featuring Berkeley Socket Programming in C for both **Transmission Control Protocol (TCP)** and **User Datagram Protocol (UDP)**.
+Comprehensive implementation, packet captures, and simulation assignments for the Computer Networks (CN) Laboratory curriculum.
 
 ---
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [Directory Structure](#directory-structure)
-- [Experiments Summary](#experiments-summary)
-  - [Experiment 2: TCP Server](#experiment-2-tcp-server)
-  - [Experiment 3: TCP Client](#experiment-3-tcp-client)
-  - [Experiment 4: UDP Server](#experiment-4-udp-server)
-  - [Experiment 5: UDP Client](#experiment-5-udp-client)
-- [Protocol Workflow Diagrams](#protocol-workflow-diagrams)
-  - [TCP Client-Server Communication](#tcp-client-server-communication)
-  - [UDP Client-Server Communication](#udp-client-server-communication)
-- [TCP vs. UDP Comparison](#tcp-vs-udp-comparison)
-- [Prerequisites](#prerequisites)
-- [Compilation & Execution](#compilation--execution)
-  - [Option 1: Using Makefile (Recommended)](#option-1-using-makefile-recommended)
-  - [Option 2: Using GCC Manually](#option-2-using-gcc-manually)
-- [Sample Input & Output](#sample-input--output)
+- [Repository Structure](#repository-structure)
+- [Experiments Index](#experiments-index)
+  - [Socket Programming (Exp 2 – 5)](#socket-programming-exp-2--5)
+  - [Packet Analysis & Protocols (Exp 6 – 7)](#packet-analysis--protocols-exp-6--7)
+  - [Data Link Layer Protocols (Exp 8)](#data-link-layer-protocols-exp-8)
+  - [Traffic Shaping & Congestion Control (Exp 9)](#traffic-shaping--congestion-control-exp-9)
+  - [Routing Algorithms (Exp 10)](#routing-algorithms-exp-10)
+- [Architecture & Sequence Diagrams](#architecture--sequence-diagrams)
+  - [TCP Client-Server Flow](#tcp-client-server-flow)
+  - [UDP Client-Server Flow](#udp-client-server-flow)
+  - [DNS & HTTP Request Flow](#dns--http-request-flow)
+- [Compilation & Execution Guide](#compilation--execution-guide)
+  - [Quick Build (Makefile)](#quick-build-makefile)
+  - [Individual Execution](#individual-execution)
+- [Summary Table](#summary-table)
 
 ---
 
 ## Overview
 
-This repository demonstrates client-server networking using socket programming in C. 
+This repository contains lab assignments covering transport protocols, socket programming, application-layer packet inspection, flow control, traffic shaping, and dynamic network routing.
 
-The application model across all experiments:
-1. **Client**: Collects student information (`name`, `prn`, and marks for 5 subjects), encapsulates them in a C `struct Student`, records the timestamp before sending, transmits the struct across the network to the server, and measures the round-trip latency upon receiving the response.
-2. **Server**: Receives the student data, parses the subject marks, computes the aggregate percentage, and replies with the percentage as a floating-point value.
-
-```c
-struct Student {
-    char name[50];
-    char prn[30];
-    float marks[5];
-};
-```
+- **Socket Programming:** C client-server implementations with Berkeley sockets over TCP and UDP, transmitting structured binary data (`struct Student`) and computing round-trip latency.
+- **Packet Inspection:** Wireshark capture and protocol analysis for DNS (`A`, `PTR`, `MX` lookups) and HTTP request/response flows.
+- **Flow & Congestion Control:** Simulation of Go-Back-N Sliding Window ARQ, Leaky Bucket, and Token Bucket algorithms.
+- **Routing:** Distance Vector Routing based on iterative Bellman-Ford shortest-path relaxations.
 
 ---
 
-## Directory Structure
+## Repository Structure
 
 ```text
 CN/
@@ -59,27 +52,58 @@ CN/
 ├── Exp-04-UDP-Server/
 │   ├── README.md
 │   └── udp_server.c
-└── Exp-05-UDP-Client/
+├── Exp-05-UDP-Client/
+│   ├── README.md
+│   └── udp_client.c
+├── Exp-06-DNS-Packet-Analysis/
+│   └── README.md
+├── Exp-07-DNS-HTTP-Packet-Analysis/
+│   └── README.md
+├── Exp-08-Sliding-Window-Protocol/
+│   ├── README.md
+│   └── sliding_window279.c
+├── Exp-09-Traffic-Shaping/
+│   ├── README.md
+│   ├── exp9_279.c          # Leaky Bucket
+│   └── exp9_2_279.c        # Token Bucket
+└── Exp-10-Distance-Vector-Routing/
     ├── README.md
-    └── udp_client.c
+    └── exp10_279.c
 ```
 
 ---
 
-## Experiments Summary
+## Experiments Index
 
-| Experiment | Program | Protocol | Socket Type | Port | Description |
-|:---:|:---|:---:|:---:|:---:|:---|
-| **Exp 2** | [`tcp_server.c`](./Exp-02-TCP-Server/tcp_server.c) | TCP | `SOCK_STREAM` | `8080` | Connection-oriented server that accepts TCP clients, receives student data, computes percentage, and sends the result. |
-| **Exp 3** | [`tcp_client.c`](./Exp-03-TCP-Client/tcp_client.c) | TCP | `SOCK_STREAM` | `8080` | Connection-oriented client that connects to the server, sends student details, and measures round-trip response time. |
-| **Exp 4** | [`udp_server.c`](./Exp-04-UDP-Server/udp_server.c) | UDP | `SOCK_DGRAM` | `8081` | Connectionless server that receives student datagrams via `recvfrom()`, calculates percentage, and responds using `sendto()`. |
-| **Exp 5** | [`udp_client.c`](./Exp-05-UDP-Client/udp_client.c) | UDP | `SOCK_DGRAM` | `8081` | Connectionless client that transmits student datagrams via `sendto()`, receives calculated percentage via `recvfrom()`, and measures latency. |
+### Socket Programming (Exp 2 – 5)
+
+| Experiment | Title | Protocol | Port | Source |
+| :---: | :--- | :---: | :---: | :--- |
+| **Exp 2** | [TCP Socket Server](./Exp-02-TCP-Server/) | TCP (`SOCK_STREAM`) | `8080` | [`tcp_server.c`](./Exp-02-TCP-Server/tcp_server.c) |
+| **Exp 3** | [TCP Socket Client](./Exp-03-TCP-Client/) | TCP (`SOCK_STREAM`) | `8080` | [`tcp_client.c`](./Exp-03-TCP-Client/tcp_client.c) |
+| **Exp 4** | [UDP Socket Server](./Exp-04-UDP-Server/) | UDP (`SOCK_DGRAM`) | `8081` | [`udp_server.c`](./Exp-04-UDP-Server/udp_server.c) |
+| **Exp 5** | [UDP Socket Client](./Exp-05-UDP-Client/) | UDP (`SOCK_DGRAM`) | `8081` | [`udp_client.c`](./Exp-05-UDP-Client/udp_client.c) |
+
+### Packet Analysis & Protocols (Exp 6 – 7)
+
+| Experiment | Title | Tools | Filter | Guide |
+| :---: | :--- | :---: | :---: | :--- |
+| **Exp 6** | [DNS Packet Analysis](./Exp-06-DNS-Packet-Analysis/) | `nslookup`, Wireshark | `dns` | [Lab Manual](./Exp-06-DNS-Packet-Analysis/README.md) |
+| **Exp 7** | [DNS & HTTP Packet Analysis](./Exp-07-DNS-HTTP-Packet-Analysis/) | Browser/curl, Wireshark | `dns \|\| http` | [Lab Manual](./Exp-07-DNS-HTTP-Packet-Analysis/README.md) |
+
+### Flow, Traffic Shaping & Routing (Exp 8 – 10)
+
+| Experiment | Title | Description | Source |
+| :---: | :--- | :--- | :--- |
+| **Exp 8** | [Sliding Window Protocol](./Exp-08-Sliding-Window-Protocol/) | Go-Back-N ARQ simulation with interactive acknowledgment & retransmission. | [`sliding_window279.c`](./Exp-08-Sliding-Window-Protocol/sliding_window279.c) |
+| **Exp 9** | [Traffic Shaping Algorithms](./Exp-09-Traffic-Shaping/) | Leaky Bucket (constant leak rate) & Token Bucket (bursty transmission). | [`exp9_279.c`](./Exp-09-Traffic-Shaping/exp9_279.c), [`exp9_2_279.c`](./Exp-09-Traffic-Shaping/exp9_2_279.c) |
+| **Exp 10** | [Distance Vector Routing](./Exp-10-Distance-Vector-Routing/) | Dynamic routing table calculation using Bellman-Ford algorithm. | [`exp10_279.c`](./Exp-10-Distance-Vector-Routing/exp10_279.c) |
 
 ---
 
-## Protocol Workflow Diagrams
+## Architecture & Sequence Diagrams
 
-### TCP Client-Server Communication
+### TCP Client-Server Flow
 
 ```mermaid
 sequenceDiagram
@@ -92,11 +116,11 @@ sequenceDiagram
     Client->>Server: connect() [SYN, SYN-ACK, ACK]
     Note over Server: accept() connection established
 
-    Note over Client: Start timer (clock())
+    Note over Client: Start latency timer (clock())
     Client->>Server: send(struct Student)
     Note over Server: recv(struct Student)<br/>Compute total & percentage
     Server->>Client: send(float percentage)
-    Note over Client: recv(float percentage)<br/>Stop timer & compute latency
+    Note over Client: recv(float percentage)<br/>Stop timer & compute response time
 
     Client->>Server: close(sock)
     Note over Server: close(client_fd) & close(server_fd)
@@ -104,7 +128,7 @@ sequenceDiagram
 
 ---
 
-### UDP Client-Server Communication
+### UDP Client-Server Flow
 
 ```mermaid
 sequenceDiagram
@@ -115,11 +139,11 @@ sequenceDiagram
     Note over Server: socket() -> bind(8081)
     Note over Client: socket()
     
-    Note over Client: Start timer (clock())
+    Note over Client: Start latency timer (clock())
     Client->>Server: sendto(struct Student, server_addr)
     Note over Server: recvfrom(struct Student, client_addr)<br/>Compute total & percentage
     Server->>Client: sendto(float percentage, client_addr)
-    Note over Client: recvfrom(float percentage)<br/>Stop timer & compute latency
+    Note over Client: recvfrom(float percentage)<br/>Stop timer & compute response time
 
     Client->>Client: close(sock)
     Server->>Server: close(sock)
@@ -127,175 +151,129 @@ sequenceDiagram
 
 ---
 
-## TCP vs. UDP Comparison
+### DNS & HTTP Request Flow
 
-| Feature | TCP (Exp 2 & 3) | UDP (Exp 4 & 5) |
-|:---|:---|:---|
-| **Connection Type** | Connection-oriented (Handshake required) | Connectionless (No handshake) |
-| **Socket Type** | `SOCK_STREAM` | `SOCK_DGRAM` |
-| **System Calls** | `socket`, `bind`, `listen`, `accept`, `connect`, `send`, `recv` | `socket`, `bind`, `sendto`, `recvfrom` |
-| **Reliability** | High (acknowledgments, retransmission) | Best-effort (packets can be lost/reordered) |
-| **Header Overhead** | 20–60 bytes | 8 bytes |
-| **Latency / Speed** | Higher overhead due to handshake and ACK | Lower latency, faster transmission |
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Client as Web Client
+    actor DNS as DNS Resolver (UDP 53)
+    actor Web as Web Server (TCP 80)
 
----
+    Client->>DNS: DNS Query (A record for example.com)
+    DNS-->>Client: DNS Answer (93.184.216.34)
 
-## Prerequisites
+    Client->>Web: TCP SYN
+    Web-->>Client: TCP SYN-ACK
+    Client->>Web: TCP ACK
 
-- Operating System: **Linux**, **WSL (Windows Subsystem for Linux)**, or **macOS**
-- Compiler: `gcc`
-- Build utility: `make` (optional)
+    Client->>Web: HTTP GET /
+    Web-->>Client: HTTP/1.1 200 OK (HTML Payload)
 
----
-
-## Compilation & Execution
-
-### Option 1: Using Makefile (Recommended)
-
-1. **Build all programs at once:**
-   ```bash
-   make all
-   ```
-
-2. **Run TCP Session:**
-   - **Terminal 1 (Server):**
-     ```bash
-     ./Exp-02-TCP-Server/tcp_server
-     ```
-   - **Terminal 2 (Client):**
-     ```bash
-     ./Exp-03-TCP-Client/tcp_client
-     ```
-
-3. **Run UDP Session:**
-   - **Terminal 1 (Server):**
-     ```bash
-     ./Exp-04-UDP-Server/udp_server
-     ```
-   - **Terminal 2 (Client):**
-     ```bash
-     ./Exp-05-UDP-Client/udp_client
-     ```
-
-4. **Clean binaries:**
-   ```bash
-   make clean
-   ```
+    Client->>Web: TCP FIN-ACK
+    Web-->>Client: TCP FIN-ACK
+```
 
 ---
 
-### Option 2: Using GCC Manually
+## Compilation & Execution Guide
 
-#### TCP (Experiments 2 & 3)
+### Quick Build (Makefile)
 
-**Terminal 1 — Server:**
 ```bash
-cd Exp-02-TCP-Server
-gcc tcp_server.c -o tcp_server
-./tcp_server
+# Build all executable programs across all experiments
+make all
+
+# Clean all generated binaries
+make clean
 ```
 
-**Terminal 2 — Client:**
+Target-specific builds:
+- `make exp2` — TCP Server
+- `make exp3` — TCP Client
+- `make exp4` — UDP Server
+- `make exp5` — UDP Client
+- `make exp8` — Sliding Window Protocol
+- `make exp9` — Leaky and Token Bucket
+- `make exp10` — Distance Vector Routing
+
+---
+
+### Individual Execution
+
+#### 1. TCP Socket Programming (Exp 2 & 3)
 ```bash
-cd Exp-03-TCP-Client
-gcc tcp_client.c -o tcp_client
-./tcp_client
+# Terminal 1: Run TCP Server
+cd Exp-02-TCP-Server && gcc tcp_server.c -o tcp_server && ./tcp_server
+
+# Terminal 2: Run TCP Client
+cd Exp-03-TCP-Client && gcc tcp_client.c -o tcp_client && ./tcp_client
+```
+
+#### 2. UDP Socket Programming (Exp 4 & 5)
+```bash
+# Terminal 1: Run UDP Server
+cd Exp-04-UDP-Server && gcc udp_server.c -o udp_server && ./udp_server
+
+# Terminal 2: Run UDP Client
+cd Exp-05-UDP-Client && gcc udp_client.c -o udp_client && ./udp_client
+```
+
+#### 3. Wireshark Packet Analysis (Exp 6 & 7)
+- **Exp 6 (DNS):**
+  ```cmd
+  nslookup www.example.com
+  nslookup 93.184.216.34
+  nslookup -query=MX example.com
+  ```
+  *Filter in Wireshark:* `dns`
+
+- **Exp 7 (DNS & HTTP):**
+  ```cmd
+  nslookup www.google.com
+  curl -I http://example.com
+  ```
+  *Filter in Wireshark:* `dns || http`
+
+#### 4. Sliding Window Protocol (Exp 8)
+```bash
+cd Exp-08-Sliding-Window-Protocol
+gcc sliding_window279.c -o sliding_window279
+./sliding_window279
+```
+
+#### 5. Traffic Shaping Algorithms (Exp 9)
+```bash
+cd Exp-09-Traffic-Shaping
+
+# Leaky Bucket
+gcc exp9_279.c -o exp9_279
+./exp9_279
+
+# Token Bucket
+gcc exp9_2_279.c -o exp9_2_279
+./exp9_2_279
+```
+
+#### 6. Distance Vector Routing (Exp 10)
+```bash
+cd Exp-10-Distance-Vector-Routing
+gcc exp10_279.c -o exp10_279
+./exp10_279
 ```
 
 ---
 
-#### UDP (Experiments 4 & 5)
+## Summary Table
 
-**Terminal 1 — Server:**
-```bash
-cd Exp-04-UDP-Server
-gcc udp_server.c -o udp_server
-./udp_server
-```
-
-**Terminal 2 — Client:**
-```bash
-cd Exp-05-UDP-Client
-gcc udp_client.c -o udp_client
-./udp_client
-```
-
----
-
-## Sample Input & Output
-
-### 1. TCP Execution
-
-#### Server Output:
-```text
-TCP Server started...
-Waiting for client...
-
-Student Details Received:
-Name : Alice Johnson
-PRN : 1032210012
-Subject 1 Marks : 85.50
-Subject 2 Marks : 90.00
-Subject 3 Marks : 78.50
-Subject 4 Marks : 88.00
-Subject 5 Marks : 92.00
-Percentage calculated: 86.80%
-```
-
-#### Client Output:
-```text
-Connected to TCP Server.
-
-Enter student name: Alice Johnson
-Enter PRN: 1032210012
-Enter marks for Subject 1: 85.5
-Enter marks for Subject 2: 90
-Enter marks for Subject 3: 78.5
-Enter marks for Subject 4: 88
-Enter marks for Subject 5: 92
-
------ Result -----
-Student Name : Alice Johnson
-PRN          : 1032210012
-Percentage   : 86.80%
-Response Time: 0.421 ms
-```
-
----
-
-### 2. UDP Execution
-
-#### Server Output:
-```text
-UDP Server started...
-Waiting for client data...
-
-Student Details Received:
-Name : Bob Smith
-PRN : 1032210045
-Subject 1 Marks : 76.00
-Subject 2 Marks : 82.50
-Subject 3 Marks : 91.00
-Subject 4 Marks : 84.00
-Subject 5 Marks : 79.50
-Percentage calculated: 82.60%
-```
-
-#### Client Output:
-```text
-UDP Client started.
-
-Enter student name: Bob Smith
-Enter PRN: 1032210045
-Enter marks for Subject 1: 76
-Enter marks for Subject 2: 82.5
-Enter marks for Subject 3: 91
-Enter marks for Subject 4: 84
-Enter marks for Subject 5: 79.5
-
------ Result -----
-Student Name : Bob Smith
-PRN          : 1032210045
-Percentage   : 82.60%
-Response Time: 0.185 ms
-```
+| Exp | Topic | Protocol / Alg | Type | Output / Goal |
+| :---: | :--- | :--- | :--- | :--- |
+| **02** | TCP Socket Server | TCP | C / Sockets | Receives student data, calculates aggregate percentage |
+| **03** | TCP Socket Client | TCP | C / Sockets | Transmits student record, measures round-trip response time |
+| **04** | UDP Socket Server | UDP | C / Sockets | Connectionless percentage calculation server |
+| **05** | UDP Socket Client | UDP | C / Sockets | Connectionless client with latency measurement |
+| **06** | DNS Packet Inspection | DNS | Packet Capture | Forward lookup (`A`), reverse lookup (`PTR`), mail exchange (`MX`) |
+| **07** | DNS & HTTP Inspection | DNS, HTTP | Packet Capture | DNS query resolution followed by HTTP GET request/response cycle |
+| **08** | Flow Control | Go-Back-N ARQ | C Simulation | Simulates pipelining, cumulative ACK, and window reset on loss |
+| **09** | Congestion Control | Leaky & Token Bucket | C Simulation | Constant rate shaping vs. burst-tolerant token depletion |
+| **10** | Routing Algorithms | Distance Vector (Bellman-Ford) | C Simulation | Shortest-path routing tables with convergence tracking |
