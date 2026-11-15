@@ -1,88 +1,57 @@
-# Experiment 2: TCP Socket Programming — Server
+# Experiment 2: TCP Echo Server
 
-## C Code (`tcp_server.c`)
+## C Code (`server1242.c`)
 
 ```c
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include <arpa/inet.h>
+#include <netinet/in.h>
 
-#define PORT 8080
+#define PORT (10000 + 242)
+#define BUF_SIZE 1024
 
-struct Student {
-    char name[50];
-    char prn[30];
-    float marks[5];
-};
+int main()
+{
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    char buffer[BUF_SIZE];
+    int addrlen = sizeof(address);
 
-int main() {
-    int server_fd, client_fd;
-    struct sockaddr_in server_addr, client_addr;
-    socklen_t addr_len = sizeof(client_addr);
-    struct Student student;
-    float total, percentage;
-
-    // Create socket
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_fd < 0) {
-        perror("Socket creation failed");
-        exit(1);
+
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+
+    listen(server_fd, 3);
+
+    printf("TCP Echo Server listening on port %d...\n", PORT);
+
+    new_socket = accept(
+        server_fd,
+        (struct sockaddr *)&address,
+        (socklen_t *)&addrlen
+    );
+
+    while (1)
+    {
+        memset(buffer, 0, BUF_SIZE);
+
+        int bytes = read(new_socket, buffer, BUF_SIZE);
+
+        if (bytes <= 0)
+            break;
+
+        printf("Received: %s", buffer);
+
+        send(new_socket, buffer, bytes, 0);
     }
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(PORT);
-
-    // Bind
-    if (bind(server_fd, (struct sockaddr *)&server_addr,
-             sizeof(server_addr)) < 0) {
-        perror("Bind failed");
-        close(server_fd);
-        exit(1);
-    }
-
-    // Listen
-    listen(server_fd, 5);
-
-    printf("TCP Server started...\n");
-    printf("Waiting for client...\n");
-
-    // Accept client
-    client_fd = accept(server_fd, (struct sockaddr *)&client_addr,
-                       &addr_len);
-
-    if (client_fd < 0) {
-        perror("Accept failed");
-        close(server_fd);
-        exit(1);
-    }
-
-    // Receive student data
-    recv(client_fd, &student, sizeof(student), 0);
-
-    printf("\nStudent Details Received:\n");
-    printf("Name : %s\n", student.name);
-    printf("PRN : %s\n", student.prn);
-
-    total = 0;
-
-    for (int i = 0; i < 5; i++) {
-        printf("Subject %d Marks : %.2f\n",
-               i + 1, student.marks[i]);
-        total += student.marks[i];
-    }
-
-    // Each subject is out of 100
-    percentage = total / 5.0;
-
-    printf("Percentage calculated: %.2f%%\n", percentage);
-
-    // Send percentage to client
-    send(client_fd, &percentage, sizeof(percentage), 0);
-
-    close(client_fd);
+    close(new_socket);
     close(server_fd);
 
     return 0;
@@ -92,18 +61,18 @@ int main() {
 ---
 
 ## Objective
-To implement a connection-oriented **TCP Server** in C using Berkeley sockets that:
-1. Creates a stream socket and binds it to port `8080`.
+To implement a connection-oriented **TCP Echo Server** in C using Berkeley sockets that:
+1. Creates a stream socket (`SOCK_STREAM`) and binds it to port `10242` (`10000 + 242`).
 2. Listens for incoming connections and accepts a client connection.
-3. Receives student information (`name`, `prn`, `marks` of 5 subjects) structured as `struct Student`.
-4. Computes the total marks and calculates the aggregate percentage.
-5. Transmits the calculated percentage back to the client.
+3. Enters an iterative loop reading incoming text buffers from the client.
+4. Prints the received text to standard output and immediately echoes it back to the client.
+5. Closes the connection gracefully when the client terminates.
 
 ---
 
 ## Theory
 
-**Transmission Control Protocol (TCP)** is a connection-oriented, reliable, stream-based transport layer protocol. It guarantees in-order and error-checked delivery of a stream of octets between applications running on hosts communicating via an IP network.
+**Transmission Control Protocol (TCP)** provides reliable, ordered, and error-checked delivery of a stream of bytes between applications over an IP network.
 
 ### Socket Lifecycle (TCP Server)
 ```
@@ -118,30 +87,20 @@ To implement a connection-oriented **TCP Server** in C using Berkeley sockets th
           ▼
        accept()  ◄── (Blocks until client connects)
           │
-     recv() / send()
-          │
+  ┌───────▼───────┐
+  │ read() buffer │
+  │ print buffer  │ (Loop until client disconnects)
+  │ send() echo   │
+  └───────┬───────┘
           ▼
         close()
 ```
 
-1. **`socket(AF_INET, SOCK_STREAM, 0)`**: Creates an IPv4 TCP stream socket endpoint.
-2. **`bind(...)`**: Associates the socket with a local IP address (`INADDR_ANY`) and port (`8080`).
-3. **`listen(server_fd, backlog)`**: Marks the socket as passive to accept incoming connection requests.
-4. **`accept(...)`**: Extracts the first connection request on the queue of pending connections, creating a new connected socket descriptor (`client_fd`).
-5. **`recv(...)` & `send(...)`**: Exchanges data with the connected client.
-6. **`close(...)`**: Closes the client and server sockets to release system resources.
-
----
-
-## Data Structure
-
-```c
-struct Student {
-    char name[50];
-    char prn[30];
-    float marks[5];
-};
-```
+1. **`socket(AF_INET, SOCK_STREAM, 0)`**: Initializes an IPv4 TCP stream socket descriptor.
+2. **`bind(...)`**: Binds the socket to `INADDR_ANY` on port `10242` (`10000 + PRN`).
+3. **`listen(server_fd, 3)`**: Puts the socket in passive listening mode with a connection backlog queue of 3.
+4. **`accept(...)`**: Accepts the connection from the client, returning `new_socket`.
+5. **`read(...)` & `send(...)`**: Reads client data into `buffer` and echoes it back.
 
 ---
 
@@ -158,34 +117,26 @@ struct Student {
 
 2. Compile the server program:
    ```bash
-   gcc tcp_server.c -o tcp_server
+   gcc server1242.c -o server
    ```
 
-3. Run the TCP Server:
+3. Run the TCP Echo Server:
    ```bash
-   ./tcp_server
+   ./server
    ```
 
 > [!IMPORTANT]
-> The server must be started **before** the TCP client ([Exp-03-TCP-Client](../Exp-03-TCP-Client/tcp_client.c)).
+> The server must be started **before** the TCP Echo client ([Exp-03-TCP-Client](../Exp-03-TCP-Client/client1242.c)).
 
 ---
 
 ## Sample Output
 
 ```text
-TCP Server started...
-Waiting for client...
-
-Student Details Received:
-Name : Alice Johnson
-PRN : 1032210012
-Subject 1 Marks : 85.50
-Subject 2 Marks : 90.00
-Subject 3 Marks : 78.50
-Subject 4 Marks : 88.00
-Subject 5 Marks : 92.00
-Percentage calculated: 86.80%
+TCP Echo Server listening on port 10242...
+Received: Hello from Client!
+Received: Computer Networks Lab
+Received: Testing Echo Communication
 ```
 
 ---

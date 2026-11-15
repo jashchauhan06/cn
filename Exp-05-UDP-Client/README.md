@@ -1,86 +1,45 @@
-# Experiment 5: UDP Socket Programming — Client
+# Experiment 5: UDP Client
 
-## C Code (`udp_client.c`)
+## C Code (`client_udp_242.c`)
 
 ```c
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <time.h>
 
-#define PORT 8081
+int main()
+{
+    int sockfd;
+    char message[100], buffer[100];
+    struct sockaddr_in serverAddr;
+    socklen_t addr_size;
 
-struct Student {
-    char name[50];
-    char prn[30];
-    float marks[5];
-};
-
-int main() {
-    int sock;
-    struct sockaddr_in server_addr;
-    struct Student student;
-    float percentage;
-    socklen_t addr_len = sizeof(server_addr);
-
-    clock_t start, end;
-    double response_time;
-
-    // Create UDP socket
-    sock = socket(AF_INET, SOCK_DGRAM, 0);
-
-    if (sock < 0) {
-        perror("Socket creation failed");
-        exit(1);
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0)
+    {
+        printf("Socket creation failed\n");
+        return 1;
     }
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_port = htons(8080);
+    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    printf("UDP Client started.\n\n");
+    printf("Enter message: ");
+    fgets(message, sizeof(message), stdin);
 
-    // Input student details
-    printf("Enter student name: ");
-    scanf(" %[^\n]", student.name);
+    sendto(sockfd, message, strlen(message), 0,
+           (struct sockaddr *)&serverAddr, sizeof(serverAddr));
 
-    printf("Enter PRN: ");
-    scanf("%s", student.prn);
+    addr_size = sizeof(serverAddr);
+    int n = recvfrom(sockfd, buffer, sizeof(buffer) - 1, 0,
+                     (struct sockaddr *)&serverAddr, &addr_size);
 
-    for (int i = 0; i < 5; i++) {
-        printf("Enter marks for Subject %d: ", i + 1);
-        scanf("%f", &student.marks[i]);
-    }
+    buffer[n] = '\0';
+    printf("Server Response: %s\n", buffer);
 
-    // Start response-time measurement
-    start = clock();
-
-    // Send data to server
-    sendto(sock, &student, sizeof(student), 0,
-           (struct sockaddr *)&server_addr,
-           sizeof(server_addr));
-
-    // Receive percentage
-    recvfrom(sock, &percentage, sizeof(percentage), 0,
-             (struct sockaddr *)&server_addr,
-             &addr_len);
-
-    // End response-time measurement
-    end = clock();
-
-    response_time =
-        ((double)(end - start) / CLOCKS_PER_SEC) * 1000;
-
-    printf("\n----- Result -----\n");
-    printf("Student Name : %s\n", student.name);
-    printf("PRN          : %s\n", student.prn);
-    printf("Percentage   : %.2f%%\n", percentage);
-    printf("Response Time: %.3f ms\n", response_time);
-
-    close(sock);
-
+    close(sockfd);
     return 0;
 }
 ```
@@ -90,32 +49,29 @@ int main() {
 ## Objective
 To implement a connectionless **UDP Client** in C using Berkeley sockets that:
 1. Creates a UDP datagram socket (`SOCK_DGRAM`).
-2. Reads student credentials (`name`, `prn`, and marks for 5 subjects) from standard input.
-3. Transmits student data to the UDP server on `127.0.0.1:8081` using `sendto()`.
-4. Measures round-trip response time (latency) in milliseconds using `clock()`.
-5. Receives the computed percentage from the server using `recvfrom()` and displays the output.
+2. Configures the destination server address on `127.0.0.1:8080`.
+3. Prompts the user to enter a message via `fgets()`.
+4. Transmits the datagram directly to the server using `sendto()`.
+5. Receives the server's reply via `recvfrom()` and displays it on the console.
 
 ---
 
 ## Theory
 
-UDP does not establish a persistent connection before data transfer. The client addresses the datagram directly to the destination IP and port using `sendto()`. This provides lower latency and minimal protocol overhead compared to TCP, though packet delivery and order are not guaranteed by the transport layer.
+UDP does not establish a connection before data transmission. The client addresses the datagram directly to the destination IP and port with `sendto()` and waits for the incoming response using `recvfrom()`.
 
 ### Socket Lifecycle (UDP Client)
 ```
        socket(SOCK_DGRAM)
              │
              ▼
-         sendto()   ──► (Sends datagram directly to server destination)
+         sendto()   ──► (Sends message datagram to server)
              │
-        recvfrom()  ◄── (Awaits response datagram from server)
+        recvfrom()  ◄── (Awaits server reply datagram)
              │
              ▼
           close()
 ```
-
-### Latency Measurement
-$$\text{Response Time (ms)} = \frac{\text{end} - \text{start}}{\text{CLOCKS\_PER\_SEC}} \times 1000$$
 
 ---
 
@@ -123,7 +79,7 @@ $$\text{Response Time (ms)} = \frac{\text{end} - \text{start}}{\text{CLOCKS\_PER
 
 ### Prerequisites
 - GCC Compiler (Linux / WSL / macOS)
-- The UDP Server ([Exp-04-UDP-Server](../Exp-04-UDP-Server/)) should be running.
+- The UDP Server ([Exp-04-UDP-Server](../Exp-04-UDP-Server/)) must be running first.
 
 ### Steps
 1. Navigate to this directory:
@@ -133,12 +89,12 @@ $$\text{Response Time (ms)} = \frac{\text{end} - \text{start}}{\text{CLOCKS\_PER
 
 2. Compile the client program:
    ```bash
-   gcc udp_client.c -o udp_client
+   gcc client_udp_242.c -o client
    ```
 
 3. Run the UDP Client:
    ```bash
-   ./udp_client
+   ./client
    ```
 
 ---
@@ -146,21 +102,8 @@ $$\text{Response Time (ms)} = \frac{\text{end} - \text{start}}{\text{CLOCKS\_PER
 ## Sample Input & Output
 
 ```text
-UDP Client started.
-
-Enter student name: Bob Smith
-Enter PRN: 1032210045
-Enter marks for Subject 1: 76
-Enter marks for Subject 2: 82.5
-Enter marks for Subject 3: 91
-Enter marks for Subject 4: 84
-Enter marks for Subject 5: 79.5
-
------ Result -----
-Student Name : Bob Smith
-PRN          : 1032210045
-Percentage   : 82.60%
-Response Time: 0.185 ms
+Enter message: hello
+Server Response: Hello from UDP Server
 ```
 
 ---

@@ -1,6 +1,6 @@
 # Experiment 10: Distance Vector Routing Algorithm
 
-## C Code (`exp10_279.c`)
+## C Code (`exp10_242.c`)
 
 ```c
 #include <stdio.h>
@@ -50,7 +50,6 @@ int main() {
         }
     }
 
-    // Repeat relaxations until convergence
     iteration = 0;
 
     do {
@@ -80,7 +79,6 @@ int main() {
 
     } while (updated);
 
-    // Display routing table
     for (i = 0; i < nodes; i++) {
         printf("\nRouting table for Node %d:\n", i);
         printf("Destination\tNext Hop\tDistance\n");
@@ -128,8 +126,8 @@ Where:
 #define INF 999
 
 struct Node {
-    int dist[MAX_NODES]; // Distance to each node
-    int from[MAX_NODES]; // Next hop router
+    int dist[MAX_NODES];
+    int from[MAX_NODES];
 } rt[MAX_NODES];
 ```
 
@@ -142,10 +140,10 @@ struct Node {
 cd Exp-10-Distance-Vector-Routing
 
 # Compile
-gcc exp10_279.c -o exp10_279
+gcc exp10_242.c -o exp10_242
 
 # Run
-./exp10_279
+./exp10_242
 ```
 
 ---

@@ -1,87 +1,44 @@
-# Experiment 3: TCP Socket Programming — Client
+# Experiment 3: TCP Echo Client
 
-## C Code (`tcp_client.c`)
+## C Code (`client1242.c`)
 
 ```c
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include <arpa/inet.h>
-#include <time.h>
+#include <netinet/in.h>
 
-#define PORT 8080
+#define PORT (10000 + 242)
+#define BUF_SIZE 1024
 
-struct Student {
-    char name[50];
-    char prn[30];
-    float marks[5];
-};
-
-int main() {
+int main()
+{
     int sock;
-    struct sockaddr_in server_addr;
-    struct Student student;
-    float percentage;
-    clock_t start, end;
-    double response_time;
+    struct sockaddr_in server;
+    char buffer[BUF_SIZE];
 
-    // Create socket
     sock = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (sock < 0) {
-        perror("Socket creation failed");
-        exit(1);
+    server.sin_family = AF_INET;
+    server.sin_port = htons(PORT);
+    server.sin_addr.s_addr = INADDR_ANY;
+
+    connect(sock, (struct sockaddr *)&server, sizeof(server));
+
+    while (1)
+    {
+        printf("Enter message: ");
+        fgets(buffer, BUF_SIZE, stdin);
+
+        send(sock, buffer, strlen(buffer), 0);
+
+        memset(buffer, 0, BUF_SIZE);
+
+        read(sock, buffer, BUF_SIZE);
+
+        printf("Echo from server: %s", buffer);
     }
-
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-
-    // Server IP address
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-
-    // Connect to server
-    if (connect(sock, (struct sockaddr *)&server_addr,
-                sizeof(server_addr)) < 0) {
-        perror("Connection failed");
-        close(sock);
-        exit(1);
-    }
-
-    printf("Connected to TCP Server.\n\n");
-
-    // Input student details
-    printf("Enter student name: ");
-    scanf(" %[^\n]", student.name);
-
-    printf("Enter PRN: ");
-    scanf("%s", student.prn);
-
-    for (int i = 0; i < 5; i++) {
-        printf("Enter marks for Subject %d: ", i + 1);
-        scanf("%f", &student.marks[i]);
-    }
-
-    // Start response-time measurement
-    start = clock();
-
-    // Send data
-    send(sock, &student, sizeof(student), 0);
-
-    // Receive percentage
-    recv(sock, &percentage, sizeof(percentage), 0);
-
-    // End response-time measurement
-    end = clock();
-
-    response_time =
-        ((double)(end - start) / CLOCKS_PER_SEC) * 1000;
-
-    printf("\n----- Result -----\n");
-    printf("Student Name : %s\n", student.name);
-    printf("PRN          : %s\n", student.prn);
-    printf("Percentage   : %.2f%%\n", percentage);
-    printf("Response Time: %.3f ms\n", response_time);
 
     close(sock);
 
@@ -92,35 +49,35 @@ int main() {
 ---
 
 ## Objective
-To implement a connection-oriented **TCP Client** in C using Berkeley sockets that:
-1. Connects to a running TCP server on `127.0.0.1:8080`.
-2. Reads student details (`name`, `prn`, and marks for 5 subjects) from standard input.
-3. Sends the student data encapsulated in `struct Student` to the server over TCP.
-4. Measures round-trip response time (latency) in milliseconds using `clock()`.
-5. Receives and displays the calculated percentage along with the response time.
+To implement a connection-oriented **TCP Echo Client** in C using Berkeley sockets that:
+1. Creates a stream socket (`SOCK_STREAM`).
+2. Configures the server address structure targeting port `10242` (`10000 + 242`).
+3. Connects to the listening TCP Echo Server via `connect()`.
+4. Prompts the user for messages from standard input in an interactive loop.
+5. Sends each message to the server, reads back the echoed response, and displays it.
 
 ---
 
 ## Theory
 
-The TCP client initiates communication by performing a **three-way handshake** (SYN, SYN-ACK, ACK) with the listening server via the `connect()` system call. Once the connection is established, full-duplex communication takes place reliably over the socket.
+The TCP client establishes a full-duplex connection to the server using the `connect()` system call, which executes the TCP 3-way handshake (SYN, SYN-ACK, ACK). Once connected, the client streams user input to the server and awaits the echoed response over the same socket.
 
 ### Socket Lifecycle (TCP Client)
 ```
        socket()
           │
           ▼
-       connect()  ──► (Initiates TCP 3-way handshake)
+       connect()  ──► (Initiates TCP 3-way handshake with server)
           │
-     send() / recv()
-          │
+  ┌───────▼───────────────┐
+  │ fgets() input message │
+  │ send() to server      │ (Loop until user terminates)
+  │ read() echoed reply   │
+  │ printf() reply        │
+  └───────┬───────────────┘
           ▼
         close()
 ```
-
-### Response Time Calculation
-The response time represents the round-trip latency taken to transmit data to the server and receive the reply:
-$$\text{Response Time (ms)} = \frac{\text{end} - \text{start}}{\text{CLOCKS\_PER\_SEC}} \times 1000$$
 
 ---
 
@@ -128,7 +85,7 @@ $$\text{Response Time (ms)} = \frac{\text{end} - \text{start}}{\text{CLOCKS\_PER
 
 ### Prerequisites
 - GCC Compiler (Linux / WSL / macOS)
-- The TCP Server ([Exp-02-TCP-Server](../Exp-02-TCP-Server/)) must already be running.
+- The TCP Echo Server ([Exp-02-TCP-Server](../Exp-02-TCP-Server/)) must already be running.
 
 ### Steps
 1. Navigate to this directory:
@@ -138,12 +95,12 @@ $$\text{Response Time (ms)} = \frac{\text{end} - \text{start}}{\text{CLOCKS\_PER
 
 2. Compile the client program:
    ```bash
-   gcc tcp_client.c -o tcp_client
+   gcc client1242.c -o client
    ```
 
-3. Run the TCP Client:
+3. Run the TCP Echo Client:
    ```bash
-   ./tcp_client
+   ./client
    ```
 
 ---
@@ -151,21 +108,12 @@ $$\text{Response Time (ms)} = \frac{\text{end} - \text{start}}{\text{CLOCKS\_PER
 ## Sample Input & Output
 
 ```text
-Connected to TCP Server.
-
-Enter student name: Alice Johnson
-Enter PRN: 1032210012
-Enter marks for Subject 1: 85.5
-Enter marks for Subject 2: 90
-Enter marks for Subject 3: 78.5
-Enter marks for Subject 4: 88
-Enter marks for Subject 5: 92
-
------ Result -----
-Student Name : Alice Johnson
-PRN          : 1032210012
-Percentage   : 86.80%
-Response Time: 0.421 ms
+Enter message: Hello from Client!
+Echo from server: Hello from Client!
+Enter message: Computer Networks Lab
+Echo from server: Computer Networks Lab
+Enter message: Testing Echo Communication
+Echo from server: Testing Echo Communication
 ```
 
 ---

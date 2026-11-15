@@ -45,7 +45,6 @@ int main() {
         }
     }
 
-    // Repeat relaxations until convergence
     iteration = 0;
 
     do {
@@ -75,7 +74,6 @@ int main() {
 
     } while (updated);
 
-    // Display routing table
     for (i = 0; i < nodes; i++) {
         printf("\nRouting table for Node %d:\n", i);
         printf("Destination\tNext Hop\tDistance\n");

@@ -39,7 +39,6 @@ int main() {
         printf("Packets remaining in bucket: %d\n", stored);
     }
 
-    // Drain remaining packets
     while (stored > 0) {
         printf("\nHandling remaining packets...\n");
 

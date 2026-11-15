@@ -1,6 +1,6 @@
 # Experiment 9: Traffic Shaping Algorithms
 
-## C Code — Part A: Leaky Bucket (`exp9_279.c`)
+## C Code — Part A: Leaky Bucket (`exp9_242.c`)
 
 ```c
 #include <stdio.h>
@@ -44,7 +44,6 @@ int main() {
         printf("Packets remaining in bucket: %d\n", stored);
     }
 
-    // Drain remaining packets
     while (stored > 0) {
         printf("\nHandling remaining packets...\n");
 
@@ -67,7 +66,7 @@ int main() {
 
 ---
 
-## C Code — Part B: Token Bucket (`exp9_2_279.c`)
+## C Code — Part B: Token Bucket (`exp9_2_242.c`)
 
 ```c
 #include <stdio.h>
@@ -120,8 +119,8 @@ int main() {
 
 ## Objective
 To simulate and analyze network traffic shaping and congestion control algorithms in C:
-1. **Part A — Leaky Bucket Algorithm** ([`exp9_279.c`](./exp9_279.c))
-2. **Part B — Token Bucket Algorithm** ([`exp9_2_279.c`](./exp9_2_279.c))
+1. **Part A — Leaky Bucket Algorithm** ([`exp9_242.c`](./exp9_242.c))
+2. **Part B — Token Bucket Algorithm** ([`exp9_2_242.c`](./exp9_2_242.c))
 
 ---
 
@@ -147,8 +146,8 @@ The bucket has a finite capacity (`bucket_size`). Incoming packets enter the buc
 
 ### Compilation & Execution
 ```bash
-gcc exp9_279.c -o exp9_279
-./exp9_279
+gcc exp9_242.c -o exp9_242
+./exp9_242
 ```
 
 ### Sample Input
@@ -196,8 +195,8 @@ Tokens are added to the bucket at a constant `rate` per time unit up to `bucket_
 
 ### Compilation & Execution
 ```bash
-gcc exp9_2_279.c -o exp9_2_279
-./exp9_2_279
+gcc exp9_2_242.c -o exp9_2_242
+./exp9_2_242
 ```
 
 ### Sample Input

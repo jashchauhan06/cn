@@ -1,79 +1,62 @@
-# Experiment 4: UDP Socket Programming — Server
+# Experiment 4: UDP Server
 
-## C Code (`udp_server.c`)
+## C Code (`server_udp242.c`)
 
 ```c
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sys/socket.h>
 
-#define PORT 8081
+#define PORT 8080
 
-struct Student {
-    char name[50];
-    char prn[30];
-    float marks[5];
-};
-
-int main() {
-    int sock;
+int main()
+{
+    int server_socket;
+    char buffer[1024];
     struct sockaddr_in server_addr, client_addr;
-    socklen_t addr_len = sizeof(client_addr);
-    struct Student student;
-    float total, percentage;
+    socklen_t client_len = sizeof(client_addr);
 
-    // Create UDP socket
-    sock = socket(AF_INET, SOCK_DGRAM, 0);
-
-    if (sock < 0) {
+    server_socket = socket(AF_INET, SOCK_DGRAM, 0);
+    if (server_socket < 0)
+    {
         perror("Socket creation failed");
-        exit(1);
+        return 1;
     }
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(PORT);
 
-    // Bind socket
-    if (bind(sock, (struct sockaddr *)&server_addr,
+    if (bind(server_socket, (struct sockaddr *)&server_addr,
              sizeof(server_addr)) < 0) {
         perror("Bind failed");
-        close(sock);
-        exit(1);
+        close(server_socket);
+        return 1;
     }
 
-    printf("UDP Server started...\n");
-    printf("Waiting for client data...\n");
+    printf("UDP Server is running on port %d...\n", PORT);
 
-    // Receive student data
-    recvfrom(sock, &student, sizeof(student), 0,
-             (struct sockaddr *)&client_addr, &addr_len);
+    int n = recvfrom(server_socket, buffer, sizeof(buffer) - 1, 0,
+                     (struct sockaddr *)&client_addr, &client_len);
 
-    printf("\nStudent Details Received:\n");
-    printf("Name : %s\n", student.name);
-    printf("PRN : %s\n", student.prn);
-
-    total = 0;
-
-    for (int i = 0; i < 5; i++) {
-        printf("Subject %d Marks : %.2f\n",
-               i + 1, student.marks[i]);
-        total += student.marks[i];
+    if (n < 0)
+    {
+        perror("Receive failed");
+        close(server_socket);
+        return 1;
     }
 
-    // Calculate percentage
-    percentage = total / 5.0;
+    buffer[n] = '\0';
+    printf("Message from Client: %s\n", buffer);
 
-    printf("Percentage calculated: %.2f%%\n", percentage);
+    char *response = "Hello from UDP Server";
+    sendto(server_socket, response, strlen(response), 0,
+           (struct sockaddr *)&client_addr, client_len);
 
-    // Send result back to client
-    sendto(sock, &percentage, sizeof(percentage), 0,
-           (struct sockaddr *)&client_addr, addr_len);
-
-    close(sock);
-
+    close(server_socket);
     return 0;
 }
 ```
@@ -82,17 +65,17 @@ int main() {
 
 ## Objective
 To implement a connectionless **UDP Server** in C using Berkeley sockets that:
-1. Creates a datagram socket (`SOCK_DGRAM`) and binds it to port `8081`.
-2. Listens for incoming datagrams without establishing a dedicated connection.
-3. Receives student information (`name`, `prn`, `marks` of 5 subjects) from a client using `recvfrom()`.
-4. Computes total marks and percentage.
-5. Returns the calculated percentage back to the client's socket address using `sendto()`.
+1. Creates a UDP datagram socket (`SOCK_DGRAM`) and binds it to port `8080`.
+2. Awaits incoming datagrams from clients without establishing a handshake connection.
+3. Receives a client string message using `recvfrom()`.
+4. Displays the client message on the server console.
+5. Sends back the acknowledgment response `"Hello from UDP Server"` using `sendto()`.
 
 ---
 
 ## Theory
 
-**User Datagram Protocol (UDP)** is a connectionless, lightweight, and message-oriented transport layer protocol. Unlike TCP, UDP does not perform a connection handshake, maintain connection state, or guarantee packet delivery or order.
+**User Datagram Protocol (UDP)** is a connectionless, unreliable transport layer protocol that provides low latency and minimal overhead by avoiding handshakes and state maintenance.
 
 ### Socket Lifecycle (UDP Server)
 ```
@@ -102,28 +85,12 @@ To implement a connectionless **UDP Server** in C using Berkeley sockets that:
            bind()
              │
              ▼
-        recvfrom()  ◄── (Waits for incoming datagram from any client)
+        recvfrom()  ◄── (Waits for incoming datagram from client)
              │
-         sendto()   ──► (Sends datagram back to client address)
+         sendto()   ──► (Sends response string back to client)
              │
              ▼
           close()
-```
-
-### Key Differences from TCP
-- No `listen()` or `accept()` calls are required because UDP is connectionless.
-- Uses `recvfrom()` and `sendto()`, passing client address structures directly for each transmission.
-
----
-
-## Data Structure
-
-```c
-struct Student {
-    char name[50];
-    char prn[30];
-    float marks[5];
-};
 ```
 
 ---
@@ -141,34 +108,24 @@ struct Student {
 
 2. Compile the server program:
    ```bash
-   gcc udp_server.c -o udp_server
+   gcc server_udp242.c -o server
    ```
 
 3. Run the UDP Server:
    ```bash
-   ./udp_server
+   ./server
    ```
 
 > [!NOTE]
-> Start the server before running the UDP client ([Exp-05-UDP-Client](../Exp-05-UDP-Client/udp_client.c)).
+> Run Experiment 4 (server) first, then Experiment 5 (client). The server handles one message and exits.
 
 ---
 
 ## Sample Output
 
 ```text
-UDP Server started...
-Waiting for client data...
-
-Student Details Received:
-Name : Bob Smith
-PRN : 1032210045
-Subject 1 Marks : 76.00
-Subject 2 Marks : 82.50
-Subject 3 Marks : 91.00
-Subject 4 Marks : 84.00
-Subject 5 Marks : 79.50
-Percentage calculated: 82.60%
+UDP Server is running on port 8080...
+Message from Client: hello
 ```
 
 ---

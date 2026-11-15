@@ -1,6 +1,6 @@
 # Experiment 8: Sliding Window Protocol (Go-Back-N)
 
-## C Code (`sliding_window279.c`)
+## C Code (`sliding_window242.c`)
 
 ```c
 #include <stdio.h>
@@ -116,13 +116,10 @@ Go back to base -> Resend all frames from base
 
 ## Program Details
 
-- **File:** [`sliding_window279.c`](./sliding_window279.c)
+- **File:** [`sliding_window242.c`](./sliding_window242.c)
 - **Functions:**
   - `sender(frames[], size, window_size)`: Manages the base pointer, window boundaries, and interactive acknowledgment prompts.
   - `receiver(frames[], start, window_size)`: Simulates frame reception and ACK generation (`frame + 1`).
-
-> [!NOTE]
-> This implementation follows the lab manual reference code. In the simulation, when the remaining frames are fewer than `window_size`, the receiver loop processes the window length as specified in the lab manual screenshot.
 
 ---
 
@@ -133,10 +130,10 @@ Go back to base -> Resend all frames from base
 cd Exp-08-Sliding-Window-Protocol
 
 # Compile
-gcc sliding_window279.c -o sliding_window279
+gcc sliding_window242.c -o sliding_window242
 
 # Run
-./sliding_window279
+./sliding_window242
 ```
 
 ---
