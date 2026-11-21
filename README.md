@@ -313,7 +313,7 @@ gcc exp10_242.c -o exp10_242
 
 <div align="center">
 
-<p><strong>Made with care by <a href="https://github.com/jashchauhan06">Jash Chauhan</a></strong></p>
+<p><strong>Owner <a href="https://github.com/jashchauhan06">Jash Chauhan</a></strong></p>
 <p>Computer Networks Laboratory · Experiments 01–10</p>
 <p><a href="#jash-chauhan">↑ Back to Top</a></p>
 
