@@ -1,23 +1,43 @@
-# Computer Networks Laboratory
+<!-- =========================== HERO =========================== -->
+<div align="center">
 
-Comprehensive implementation, packet captures, and simulation assignments for the Computer Networks (CN) Laboratory curriculum.
+<h1>JASH CHAUHAN</h1>
+
+<h2>🌐 COMPUTER NETWORKS LABORATORY</h2>
+
+<p><strong>A hands-on collection of networking experiments, implementations, and protocol analysis.</strong></p>
+
+<p>
+  <a href="https://github.com/jashchauhan06"><img src="https://img.shields.io/badge/Author-Jash%20Chauhan-2563EB?style=for-the-badge&logo=github&logoColor=white" alt="Author Jash Chauhan" /></a>
+  <a href="https://github.com/jashchauhan06/cn"><img src="https://img.shields.io/badge/Experiments-10-0891B2?style=for-the-badge&logo=gitbook&logoColor=white" alt="10 experiments" /></a>
+  <img src="https://img.shields.io/badge/Language-C-334155?style=for-the-badge&logo=c&logoColor=white" alt="C programming" />
+</p>
+
+<p>
+  <a href="https://github.com/jashchauhan06/cn"><img src="https://img.shields.io/github/stars/jashchauhan06/cn?style=flat-square&label=Stars&color=0EA5E9" alt="GitHub stars" /></a>
+  <a href="https://github.com/jashchauhan06/cn"><img src="https://img.shields.io/github/last-commit/jashchauhan06/cn?style=flat-square&label=Last%20update&color=64748B" alt="Last commit" /></a>
+  <img src="https://img.shields.io/badge/Topics-TCP%20%7C%20UDP%20%7C%20DNS%20%7C%20Routing-475569?style=flat-square" alt="Topics TCP, UDP, DNS, Routing" />
+</p>
+
+<p><strong><a href="#experiments-index">Browse Experiments</a> · <a href="https://github.com/jashchauhan06/cn">View Repository</a> · <a href="#compilation--execution-guide">Run the Programs</a></strong></p>
+
+<sub>Maintained by <a href="https://github.com/jashchauhan06"><b>Jash Chauhan</b></a>.</sub>
+
+</div>
 
 ---
 
-## Table of Contents
+## Contents
 
 - [Overview](#overview)
+- [Quick Start](#quick-start)
 - [Repository Structure](#repository-structure)
 - [Experiments Index](#experiments-index)
-  - [Socket Programming (Exp 2 – 5)](#socket-programming-exp-2--5)
-  - [Packet Analysis & Protocols (Exp 6 – 7)](#packet-analysis--protocols-exp-6--7)
-  - [Data Link Layer Protocols (Exp 8)](#data-link-layer-protocols-exp-8)
-  - [Traffic Shaping & Congestion Control (Exp 9)](#traffic-shaping--congestion-control-exp-9)
-  - [Routing Algorithms (Exp 10)](#routing-algorithms-exp-10)
+  - [Network Topology & File Sharing (Exp 1)](#network-topology--file-sharing-exp-1)
+  - [Socket Programming (Exp 2–5)](#socket-programming-exp-25)
+  - [Packet Analysis (Exp 6–7)](#packet-analysis--protocols-exp-6--7)
+  - [Flow Control & Routing (Exp 8–10)](#flow-traffic-shaping--routing-exp-810)
 - [Architecture & Sequence Diagrams](#architecture--sequence-diagrams)
-  - [TCP Echo Client-Server Flow (Exp 2 & 3)](#tcp-echo-client-server-flow-exp-2--3)
-  - [UDP Client-Server Flow (Exp 4 & 5)](#udp-client-server-flow-exp-4--5)
-  - [DNS & HTTP Request Flow (Exp 6 & 7)](#dns--http-request-flow-exp-6--7)
 - [Compilation & Execution Guide](#compilation--execution-guide)
 - [Summary Table](#summary-table)
 
@@ -25,8 +45,9 @@ Comprehensive implementation, packet captures, and simulation assignments for th
 
 ## Overview
 
-This repository contains lab assignments covering transport protocols, socket programming, application-layer packet inspection, flow control, traffic shaping, and dynamic network routing.
+This repository brings together **10 Computer Networks laboratory experiments**, spanning network topology and file sharing, socket programming, packet inspection, flow control, traffic shaping, and routing. Each experiment is organized in its own folder for easy reference.
 
+- **Network Topology & File Sharing (Exp 1):** Work focused on network topologies and sharing files across a network.
 - **TCP Echo Socket Programming (Exp 2 & 3):** C client-server implementation of a full-duplex TCP Echo service on port `10242` (`10000 + PRN`).
 - **UDP Socket Programming (Exp 4 & 5):** Connectionless UDP client-server message exchange on port `8080`.
 - **Packet Inspection (Exp 6 & 7):** Wireshark capture and protocol analysis for DNS (`A`, `PTR`, `MX` lookups) and HTTP request/response flows.
@@ -35,11 +56,27 @@ This repository contains lab assignments covering transport protocols, socket pr
 
 ---
 
+## Quick Start
+
+Clone the project and open the experiment that interests you:
+
+```bash
+git clone https://github.com/jashchauhan06/cn.git
+cd cn
+```
+
+**What you'll need:** A C compiler such as GCC for the C programs; Wireshark, `nslookup`, and `curl` for the packet-analysis activities. For Experiment 1, consult the assets in its folder to determine the required topology and file-sharing environment.
+
+> **Tip:** Start with the [experiment directory](#experiments-index), then use the matching section in the [execution guide](#compilation--execution-guide). Run TCP or UDP clients and servers in separate terminals.
+
+---
+
 ## Repository Structure
 
 ```text
-CN/
+cn/
 ├── README.md
+├── Exp-01-Topology-File-Sharing/  # Network topology and file sharing
 ├── Exp-02-TCP-Server/
 │   ├── README.md
 │   └── server1242.c
@@ -72,7 +109,15 @@ CN/
 
 ## Experiments Index
 
-### Socket Programming (Exp 2 – 5)
+### Network Topology & File Sharing (Exp 1)
+
+| Experiment | Focus | Lab Folder |
+| :---: | :--- | :--- |
+| **Exp 1** | Network topology and file sharing | **[Explore Experiment 1](./Exp-01-Topology-File-Sharing/)** |
+
+> Experiment 1 has been added to the repository. Its contents are linked via the folder above; individual filenames and run steps are intentionally not assumed here.
+
+### Socket Programming (Exp 2–5)
 
 | Experiment | Title | Protocol | Port | Source |
 | :---: | :--- | :---: | :---: | :--- |
@@ -88,7 +133,7 @@ CN/
 | **Exp 6** | [DNS Packet Analysis](./Exp-06-DNS-Packet-Analysis/) | `nslookup`, Wireshark | `dns` | [Lab Manual](./Exp-06-DNS-Packet-Analysis/README.md) |
 | **Exp 7** | [DNS & HTTP Packet Analysis](./Exp-07-DNS-HTTP-Packet-Analysis/) | Browser/curl, Wireshark | `dns \|\| http` | [Lab Manual](./Exp-07-DNS-HTTP-Packet-Analysis/README.md) |
 
-### Flow, Traffic Shaping & Routing (Exp 8 – 10)
+### Flow, Traffic Shaping & Routing (Exp 8–10)
 
 | Experiment | Title | Description | Source |
 | :---: | :--- | :--- | :--- |
@@ -158,7 +203,7 @@ sequenceDiagram
     actor Web as Web Server (TCP 80)
 
     Client->>DNS: DNS Query (A record for example.com)
-    DNS-->>Client: DNS Answer (93.184.216.34)
+    DNS-->>Client: DNS Answer (resolved IP address)
 
     Client->>Web: TCP SYN
     Web-->>Client: TCP SYN-ACK
@@ -175,7 +220,11 @@ sequenceDiagram
 
 ## Compilation & Execution Guide
 
-### 1. TCP Echo Socket Programming (Exp 2 & 3)
+### Experiment 1 — Network Topology & File Sharing
+
+Open **[Exp-01-Topology-File-Sharing](./Exp-01-Topology-File-Sharing/)** to access the network-topology and file-sharing materials. The required application or workflow depends on the files in that folder; unlike the socket programs below, there is no single verified GCC command for this experiment.
+
+### Experiments 2 & 3 — TCP Echo Socket Programming
 ```bash
 # Terminal 1: Run TCP Echo Server
 cd Exp-02-TCP-Server
@@ -188,7 +237,7 @@ gcc client1242.c -o client
 ./client
 ```
 
-### 2. UDP Socket Programming (Exp 4 & 5)
+### Experiments 4 & 5 — UDP Socket Programming
 ```bash
 # Terminal 1: Run UDP Server
 cd Exp-04-UDP-Server
@@ -201,7 +250,7 @@ gcc client_udp_242.c -o client
 ./client
 ```
 
-### 3. Wireshark Packet Analysis (Exp 6 & 7)
+### Experiments 6 & 7 — Wireshark Packet Analysis
 - **Exp 6 (DNS):**
   ```cmd
   nslookup www.example.com
@@ -217,14 +266,14 @@ gcc client_udp_242.c -o client
   ```
   *Filter in Wireshark:* `dns || http`
 
-### 4. Sliding Window Protocol (Exp 8)
+### Experiment 8 — Sliding Window Protocol
 ```bash
 cd Exp-08-Sliding-Window-Protocol
 gcc sliding_window242.c -o sliding_window242
 ./sliding_window242
 ```
 
-### 5. Traffic Shaping Algorithms (Exp 9)
+### Experiment 9 — Traffic Shaping Algorithms
 ```bash
 cd Exp-09-Traffic-Shaping
 
@@ -237,7 +286,7 @@ gcc exp9_2_242.c -o exp9_2_242
 ./exp9_2_242
 ```
 
-### 6. Distance Vector Routing (Exp 10)
+### Experiment 10 — Distance Vector Routing
 ```bash
 cd Exp-10-Distance-Vector-Routing
 gcc exp10_242.c -o exp10_242
@@ -250,6 +299,7 @@ gcc exp10_242.c -o exp10_242
 
 | Exp | Topic | Protocol / Alg | Type | Output / Goal |
 | :---: | :--- | :--- | :--- | :--- |
+| **01** | Network Topology & File Sharing | Network Topologies / File Sharing | Lab Activity | Explore topology and file-sharing experiment materials |
 | **02** | TCP Echo Server | TCP | C / Sockets | Listens on port `10242`, receives and echoes incoming client messages |
 | **03** | TCP Echo Client | TCP | C / Sockets | Connects to port `10242`, sends user text, displays echoed response |
 | **04** | UDP Server | UDP | C / Sockets | Listens on port `8080`, prints client message, replies with `"Hello from UDP Server"` |
@@ -259,3 +309,12 @@ gcc exp10_242.c -o exp10_242
 | **08** | Flow Control | Go-Back-N ARQ | C Simulation | Simulates pipelining, cumulative ACK, and window reset on loss |
 | **09** | Congestion Control | Leaky & Token Bucket | C Simulation | Constant rate shaping vs. burst-tolerant token depletion |
 | **10** | Routing Algorithms | Distance Vector (Bellman-Ford) | C Simulation | Shortest-path routing tables with convergence tracking |
+---
+
+<div align="center">
+
+<p><strong>Made with care by <a href="https://github.com/jashchauhan06">Jash Chauhan</a></strong></p>
+<p>Computer Networks Laboratory · Experiments 01–10</p>
+<p><a href="#jash-chauhan">↑ Back to Top</a></p>
+
+</div>
